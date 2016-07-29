@@ -2,5 +2,10 @@
 name = "wifiscanner"
 version = "0.1.0"
 authors = ["Mark Sta Ana <booyaabooyaabooyaa@gmail.com>"]
+description = "List WiFi hotspots in your area"
+repository = "https://github.com/booyaa/wifiscanner"
+readme = "README.md"
+keywords = ["wifi","hotspots","network"]
+license-file = "LICENSE"
 
 [dependencies]
