@@ -1,0 +1,6 @@
+[package]
+name = "wifiscanner"
+version = "0.1.0"
+authors = ["Mark Sta Ana <booyaabooyaabooyaa@gmail.com>"]
+
+[dependencies]
