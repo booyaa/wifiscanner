@@ -37,11 +37,11 @@
 /// Wifi struct used to return information about wifi hotspots
 #[derive(Debug)]
 pub struct Wifi {
-    mac: String,
-    ssid: String,
-    channel: String,
-    signal_level: String,
-    security: String,
+    pub mac: String,
+    pub ssid: String,
+    pub channel: String,
+    pub signal_level: String,
+    pub security: String,
 }
 
 /// Returns WiFi hotspots in your already
