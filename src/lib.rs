@@ -18,7 +18,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! wifiscanner = "0.1"
+//! wifiscanner = "0.2"
 //! ```
 //!
 //! and this to your crate root:
@@ -44,17 +44,19 @@ pub struct Wifi {
     security: String,
 }
 
-/// Return WiFi hotspots in your already
-pub fn scan() -> Vec<Wifi> {
+/// Returns WiFi hotspots in your already
+pub fn scan() -> Result<Vec<Wifi>, String> {
     use std::process::Command;
 
     let mut wifis: Vec<Wifi> = Vec::new();
 
-    let output = Command::new("/System/Library/PrivateFrameworks/Apple80211.\
+    let output = match Command::new("/System/Library/PrivateFrameworks/Apple80211.\
     framework/Versions/Current/Resources/airport")
-                     .arg("-s")
-                     .output()
-                     .expect("failed to execute proces");
+                           .arg("-s")
+                           .output() {
+        Ok(output) => output,
+        Err(_) => return Err("Failed to find airport utility (are you using OSX?)".to_string()),
+    };
 
     let data = String::from_utf8_lossy(&output.stdout);
 
@@ -63,6 +65,7 @@ pub fn scan() -> Vec<Wifi> {
     let headers = lines.next().unwrap();
 
     let headers_string = String::from(headers);
+    // FIXME: Turn these into non panicking Errors
     let col_mac = headers_string.find("BSSID").expect("failed to find BSSID");
     let col_rrsi = headers_string.find("RSSI").expect("failed to find RSSI");
     let col_channel = headers_string.find("CHANNEL").expect("failed to find CHANNEL");
@@ -85,5 +88,5 @@ pub fn scan() -> Vec<Wifi> {
         });
     }
 
-    wifis
+    Ok(wifis)
 }

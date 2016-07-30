@@ -13,7 +13,7 @@ used by adding `wifiscanner` to the dependencies in your project's `Cargo.toml`.
 
 ```toml
 [dependencies]
-wifiscanner = "0.1"
+wifiscanner = "0.2"
 ```
 
 and this to your crate root:
