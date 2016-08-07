@@ -2,7 +2,8 @@
 
 A crate to list WiFi hotspots in your area.
 
-Only support OSX computers. Linux and Windows to follow.
+Only support OSX computers. Linux is being added in this release. Windows to
+follow.
 
 Inspired by Maurice Svay's node-wifiscanner (https://github.com/mauricesvay/node-wifiscanner)
 
@@ -13,7 +14,7 @@ used by adding `wifiscanner` to the dependencies in your project's `Cargo.toml`.
 
 ```toml
 [dependencies]
-wifiscanner = "0.2"
+wifiscanner = "0.3"
 ```
 
 and this to your crate root:
