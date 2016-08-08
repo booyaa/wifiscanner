@@ -35,7 +35,7 @@
 //! ```
 
 /// Wifi struct used to return information about wifi hotspots
-#[derive(Debug)]
+#[derive(Debug,PartialEq,Eq)]
 pub struct Wifi {
     pub mac: String,
     pub ssid: String,
@@ -47,9 +47,6 @@ pub struct Wifi {
 /// Returns WiFi hotspots in your already
 pub fn scan() -> Result<Vec<Wifi>, String> {
     use std::process::Command;
-
-    let mut wifis: Vec<Wifi> = Vec::new();
-
     let output = match Command::new("/System/Library/PrivateFrameworks/Apple80211.\
     framework/Versions/Current/Resources/airport")
                            .arg("-s")
@@ -60,8 +57,14 @@ pub fn scan() -> Result<Vec<Wifi>, String> {
 
     let data = String::from_utf8_lossy(&output.stdout);
 
-    let mut lines = data.lines();
+    parse(&data)
+}
 
+#[cfg(target_os="macos")]
+fn parse(network_list: &str) -> Result<Vec<Wifi>, String> {
+    println!("airport_parse");
+    let mut wifis: Vec<Wifi> = Vec::new();
+    let mut lines = network_list.lines();
     let headers = lines.next().unwrap();
 
     let headers_string = String::from(headers);
@@ -89,4 +92,48 @@ pub fn scan() -> Result<Vec<Wifi>, String> {
     }
 
     Ok(wifis)
+}
+
+#[cfg(test)]
+#[test]
+fn parse_airport() {
+    let mut expected: Vec<Wifi> = Vec::new();
+    expected.push(Wifi {
+        mac: "00:35:1a:90:56:03".to_string(),
+        ssid: "OurTest".to_string(),
+        channel: "112".to_string(),
+        signal_level: "-70".to_string(),
+        security: "WPA2(PSK/AES/AES)".to_string(),
+    });
+
+    expected.push(Wifi {
+        mac: "00:35:1a:90:56:00".to_string(),
+        ssid: "TEST-Wifi".to_string(),
+        channel: "1".to_string(),
+        signal_level: "-67".to_string(),
+        security: "WPA2(PSK/AES/AES)".to_string(),
+    });
+
+    use std::path::PathBuf;
+    let mut path = PathBuf::new();
+    path.push("tests");
+    path.push("fixtures");
+    path.push("airport");
+    path.push("airport01.txt");
+
+    let file_path = path.as_os_str();
+
+    use std::fs::File;
+    use std::io::Read;
+
+    let mut file = File::open(&file_path).unwrap();
+
+    let mut filestr = String::new();
+    let result = file.read_to_string(&mut filestr).unwrap();
+    println!("Read {} bytes", result);
+
+    let result = parse(&filestr).unwrap();
+    let last = result.len() - 1;
+    assert_eq!(expected[0], result[0]);
+    assert_eq!(expected[1], result[last]);
 }
