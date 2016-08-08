@@ -44,7 +44,8 @@ pub struct Wifi {
     pub security: String,
 }
 
-/// Returns WiFi hotspots in your already
+/// Returns WiFi hotspots in your area
+#[cfg(target_os="macos")]
 pub fn scan() -> Result<Vec<Wifi>, String> {
     use std::process::Command;
     let output = match Command::new("/System/Library/PrivateFrameworks/Apple80211.\
@@ -57,11 +58,10 @@ pub fn scan() -> Result<Vec<Wifi>, String> {
 
     let data = String::from_utf8_lossy(&output.stdout);
 
-    parse(&data)
+    parse_airport(&data)
 }
 
-#[cfg(target_os="macos")]
-fn parse(network_list: &str) -> Result<Vec<Wifi>, String> {
+fn parse_airport(network_list: &str) -> Result<Vec<Wifi>, String> {
     println!("airport_parse");
     let mut wifis: Vec<Wifi> = Vec::new();
     let mut lines = network_list.lines();
@@ -94,9 +94,43 @@ fn parse(network_list: &str) -> Result<Vec<Wifi>, String> {
     Ok(wifis)
 }
 
+fn parse_iwlist(network_list: &str) -> Result<Vec<Wifi>, String> {
+    println!("airport_parse");
+    let wifis: Vec<Wifi> = Vec::new();
+
+    Ok(wifis)
+}
+
 #[cfg(test)]
 #[test]
-fn parse_airport() {
+fn should_parse_iwlist() {
+    let expected: Vec<Wifi> = Vec::new();
+
+    use std::path::PathBuf;
+    let mut path = PathBuf::new();
+    path.push("tests");
+    path.push("fixtures");
+    path.push("airport");
+    path.push("airport01.txt");
+
+    let file_path = path.as_os_str();
+
+    use std::fs::File;
+    use std::io::Read;
+
+    let mut file = File::open(&file_path).unwrap();
+
+    let mut filestr = String::new();
+    let result = file.read_to_string(&mut filestr).unwrap();
+    println!("Read {} bytes", result);
+
+    let result = parse_iwlist(&filestr).unwrap();
+    assert_eq!(expected, result);
+}
+
+#[cfg(test)]
+#[test]
+fn should_parse_airport() {
     let mut expected: Vec<Wifi> = Vec::new();
     expected.push(Wifi {
         mac: "00:35:1a:90:56:03".to_string(),
@@ -132,7 +166,7 @@ fn parse_airport() {
     let result = file.read_to_string(&mut filestr).unwrap();
     println!("Read {} bytes", result);
 
-    let result = parse(&filestr).unwrap();
+    let result = parse_airport(&filestr).unwrap();
     let last = result.len() - 1;
     assert_eq!(expected[0], result[0]);
     assert_eq!(expected[1], result[last]);
