@@ -87,12 +87,10 @@ pub fn scan() -> Result<Vec<Wifi>, Error> {
 #[cfg(target_os="linux")]
 pub fn scan() -> Result<Vec<Wifi>, Error> {
     use std::process::Command;
-    let output = match Command::new("/usr/bin/iwlist")
-                           .arg("scan")
-                           .output() {
-        Ok(output) => output,
-        Err(_) => return Err("Failed to find iwlist utility (are you using Linux?)"),//.to_string()),
-    };
+    let output = try!(Command::new("/usr/bin/iwlist")
+                          .arg("scan")
+                          .output()
+                          .map_err(|_| Error::CommandNotFound));
 
     let data = String::from_utf8_lossy(&output.stdout);
 
