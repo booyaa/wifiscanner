@@ -82,7 +82,7 @@ pub fn scan() -> Result<Vec<Wifi>, Error> {
                            .arg("scan")
                            .output() {
         Ok(output) => output,
-        Err(_) => return Err("Failed to find iwlist utility (are you using Linux?)".to_string()),
+        Err(_) => return Err("Failed to find iwlist utility (are you using Linux?)"),//.to_string()),
     };
 
     let data = String::from_utf8_lossy(&output.stdout);
