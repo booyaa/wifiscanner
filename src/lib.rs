@@ -40,6 +40,7 @@ use regex::Regex;
 #[derive(Debug,PartialEq,Eq)]
 pub enum Error {
     SyntaxRegexError,
+    CommandNotFound,
 }
 // impl From<regex::Error> for Error {
 //     fn from(err: regex::Error) -> Self {
@@ -59,15 +60,23 @@ pub struct Wifi {
 
 /// Returns WiFi hotspots in your area (OSX/MacOS)
 #[cfg(target_os="macos")]
-pub fn scan() -> Result<Vec<Wifi>, String> {
+// pub fn scan() -> Result<Vec<Wifi>, String> {
+pub fn scan() -> Result<Vec<Wifi>, Error> {
     use std::process::Command;
-    let output = match Command::new("/System/Library/PrivateFrameworks/Apple80211.\
+
+    // let output = match Command::new("/System/Library/PrivateFrameworks/Apple80211.\
+    // framework/Versions/Current/Resources/airport")
+    //                        .arg("-s")
+    //                        .output() {
+    //     Ok(output) => output,
+    //     Err(_) => return Err("Failed to find airport utility (are you using OSX?)".to_string()),
+    // };
+    let output = try!(Command::new("/System/Library/PrivateFrameworks/Apple80211.\
     framework/Versions/Current/Resources/airport")
-                           .arg("-s")
-                           .output() {
-        Ok(output) => output,
-        Err(_) => return Err("Failed to find airport utility (are you using OSX?)".to_string()),
-    };
+                          .arg("-s")
+                          .output()
+                          .map_err(|_| Error::CommandNotFound));
+
 
     let data = String::from_utf8_lossy(&output.stdout);
 
@@ -92,7 +101,8 @@ pub fn scan() -> Result<Vec<Wifi>, Error> {
 
 
 
-fn parse_airport(network_list: &str) -> Result<Vec<Wifi>, String> {
+// fn parse_airport(network_list: &str) -> Result<Vec<Wifi>, String> {
+fn parse_airport(network_list: &str) -> Result<Vec<Wifi>, Error> {
     println!("airport_parse");
     let mut wifis: Vec<Wifi> = Vec::new();
     let mut lines = network_list.lines();
