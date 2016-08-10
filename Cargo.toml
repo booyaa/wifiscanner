@@ -9,3 +9,4 @@ keywords = ["wifi","hotspots","network"]
 license = "Apache-2.0"
 
 [dependencies]
+regex = "0.1"
