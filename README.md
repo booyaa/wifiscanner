@@ -16,7 +16,7 @@ used by adding `wifiscanner` to the dependencies in your project's `Cargo.toml`.
 
 ```toml
 [dependencies]
-wifiscanner = "0.3"
+wifiscanner = "0.3.*"
 ```
 
 and this to your crate root:
@@ -30,6 +30,9 @@ extern crate wifiscanner;
 use wifiscanner;
 println!("{:?}", wifiscanner::scan());
 ```
+
+Alternatively if you've cloned the the Git repo, you can run the above example
+using: `cargo run --example scan`.
 
 # Copyright
 
