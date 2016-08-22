@@ -1,5 +1,7 @@
 # wifiscanner
 
+[![Build Status](https://travis-ci.org/booyaa/wifiscanner.svg?branch=master)](https://travis-ci.org/booyaa/wifiscanner)
+
 A crate to list WiFi hotspots in your area.
 
 As of v0.3.x now supports OSX and Linux. Windows to
