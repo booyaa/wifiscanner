@@ -2,12 +2,14 @@
 
 A crate to list WiFi hotspots in your area.
 
-As of v0.3.0 now supports OSX and Linux. Windows to
+As of v0.3.x now supports OSX and Linux. Windows to
 follow.
 
 Inspired by Maurice Svay's node-wifiscanner (https://github.com/mauricesvay/node-wifiscanner)
 
 Tests shameless pilfered from Christian Kuster's node-wifi-scanner (https://github.com/ancasicolica/node-wifi-scanner)
+
+Full documentation can be found [here](https://booyaa.github.io/wifiscanner/wifiscanner/index.html).
 
 # Usage
 

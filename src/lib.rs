@@ -8,7 +8,7 @@
 
 //! A crate to list WiFi hotspots in your area.
 //!
-//! Only support OSX computers, Linux and Windows to follow.
+//! As of v0.3.x now supports OSX and Linux. Windows to follow.
 //!
 //! # Usage
 //!
