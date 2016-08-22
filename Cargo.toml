@@ -4,6 +4,7 @@ version = "0.3.1"
 authors = ["Mark Sta Ana <booyaabooyaabooyaa@gmail.com>"]
 description = "List WiFi hotspots in your area"
 repository = "https://github.com/booyaa/wifiscanner"
+documentation = "https://booyaa.github.io/wifiscanner/wifiscanner/index.html"
 readme = "README.md"
 keywords = ["wifi","hotspots","network"]
 license = "Apache-2.0"
