@@ -28,7 +28,7 @@
 //!
 //! # Example
 //!
-//! ```rust
+//! ```
 //! use wifiscanner;
 //! println!("{:?}", wifiscanner::scan());
 //! ```
@@ -40,6 +40,7 @@ extern crate regex;
 use regex::Regex;
 
 
+#[allow(missing_docs)]
 #[derive(Debug,PartialEq,Eq)]
 pub enum Error {
     SyntaxRegexError,
