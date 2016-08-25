@@ -37,6 +37,7 @@
 //! using: `cargo run --example scan`.
 
 extern crate regex;
+#[doc(no_inline)]
 use regex::Regex;
 
 
@@ -53,14 +54,17 @@ pub enum Error {
 /// Wifi struct used to return information about wifi hotspots
 #[derive(Debug,PartialEq,Eq)]
 pub struct Wifi {
+    /// mac address
     pub mac: String,
+    /// hotspot name
     pub ssid: String,
     pub channel: String,
     pub signal_level: String,
+    /// this field is currently empty in the Linux version of the lib
     pub security: String,
 }
 
-/// Returns WiFi hotspots in your area (OSX/MacOS)
+/// Returns a list of WiFi hotspots in your area - (OSX/MacOS) uses `airport`
 #[cfg(target_os="macos")]
 pub fn scan() -> Result<Vec<Wifi>, Error> {
     use std::process::Command;
@@ -70,13 +74,12 @@ pub fn scan() -> Result<Vec<Wifi>, Error> {
                           .output()
                           .map_err(|_| Error::CommandNotFound));
 
-
     let data = String::from_utf8_lossy(&output.stdout);
 
     parse_airport(&data)
 }
 
-/// Returns WiFi hotspots in your area (Linux)
+/// Returns a list of WiFi hotspots in your area - (Linux) uses `iwlist`
 #[cfg(target_os="linux")]
 pub fn scan() -> Result<Vec<Wifi>, Error> {
     use std::process::Command;
@@ -99,7 +102,7 @@ fn parse_airport(network_list: &str) -> Result<Vec<Wifi>, Error> {
     let headers = lines.next().unwrap();
 
     let headers_string = String::from(headers);
-    // FIXME: Turn these into non panicking Errors
+    // FIXME: Turn these into non panicking Errors (ok_or breaks it)
     let col_mac = headers_string.find("BSSID").expect("failed to find BSSID");
     let col_rrsi = headers_string.find("RSSI").expect("failed to find RSSI");
     let col_channel = headers_string.find("CHANNEL").expect("failed to find CHANNEL");
@@ -149,9 +152,7 @@ fn parse_iwlist(network_list: &str) -> Result<Vec<Wifi>, Error> {
         let mut wifi_rssi = String::new();
         let wifi_security = String::new(); // FIXME needs implementing
 
-
         let mac_matches = mac_regex.captures(try!(lines.next().ok_or(Error::NoValue)));
-
 
         if let Some(matches) = mac_matches {
             if let Some(mac) = matches.at(0) {
@@ -213,17 +214,11 @@ fn parse_iwlist(network_list: &str) -> Result<Vec<Wifi>, Error> {
                 wifi_rssi = String::new();
                 wifi_channel = String::new();
             }
-            // else {
-            //     println!("no wifi");
-            //     continue;
-            // }
-            // println!("end of lines");
         } // for
     }
     Ok(wifis)
 }
 
-#[cfg(test)]
 #[test]
 fn should_parse_iwlist_type_1() {
     let mut expected: Vec<Wifi> = Vec::new();
@@ -267,7 +262,6 @@ fn should_parse_iwlist_type_1() {
     assert_eq!(expected[1], result[28]);
 }
 
-#[cfg(test)]
 #[test]
 fn should_parse_iwlist_type_2() {
     let mut expected: Vec<Wifi> = Vec::new();
@@ -312,7 +306,6 @@ fn should_parse_iwlist_type_2() {
     assert_eq!(expected[1], result[2]);
 }
 
-#[cfg(test)]
 #[test]
 fn should_parse_airport() {
     let mut expected: Vec<Wifi> = Vec::new();
