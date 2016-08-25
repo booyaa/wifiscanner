@@ -96,7 +96,6 @@ pub fn scan() -> Result<Vec<Wifi>, Error> {
 
 #[allow(dead_code)]
 fn parse_airport(network_list: &str) -> Result<Vec<Wifi>, Error> {
-    println!("airport_parse");
     let mut wifis: Vec<Wifi> = Vec::new();
     let mut lines = network_list.lines();
     let headers = lines.next().unwrap();
@@ -130,20 +129,16 @@ fn parse_airport(network_list: &str) -> Result<Vec<Wifi>, Error> {
 
 #[allow(dead_code)]
 fn parse_iwlist(network_list: &str) -> Result<Vec<Wifi>, Error> {
-    println!("Start");
     let mut wifis: Vec<Wifi> = Vec::new();
 
     let cell_regex = try!(Regex::new(r"Cell [0-9]{2,} - Address:")
                               .map_err(|_| Error::SyntaxRegexError));
 
-    println!("cell_regex");
     let mac_regex =
         try!(Regex::new(r"([0-9a-zA-Z]{1}[0-9a-zA-Z]{1}[:]{1}){5}[0-9a-zA-Z]{1}[0-9a-zA-Z]{1}")
                  .map_err(|_| Error::SyntaxRegexError));
 
-    println!("mac_regex");
     for block in cell_regex.split(&network_list) {
-        println!("block");
         let mut lines = block.lines();
 
         let mut wifi_mac = String::new();
@@ -164,7 +159,6 @@ fn parse_iwlist(network_list: &str) -> Result<Vec<Wifi>, Error> {
             if line.find("ESSID:").is_some() {
                 let ssid = line.split(":").nth(1).unwrap_or("").replace("\"", "");
                 wifi_ssid = ssid.to_string();
-                // println!("SSID: {}", wifi_ssid);
             } else if line.find("Frequency:").is_some() {
                 wifi_channel = line.split("Channel")
                                    .nth(1)
@@ -208,7 +202,6 @@ fn parse_iwlist(network_list: &str) -> Result<Vec<Wifi>, Error> {
                     security: wifi_security.to_string(),
                 });
 
-                println!("\tAdded {} to vec", wifi_mac);
                 wifi_ssid = String::new();
                 wifi_mac = String::new();
                 wifi_rssi = String::new();
@@ -255,7 +248,7 @@ fn should_parse_iwlist_type_1() {
 
     let mut filestr = String::new();
     let result = file.read_to_string(&mut filestr).unwrap();
-    println!("Read {} bytes", result);
+    // println!("Read {} bytes", result);
 
     let result = parse_iwlist(&filestr).unwrap();
     assert_eq!(expected[0], result[0]);
@@ -299,7 +292,7 @@ fn should_parse_iwlist_type_2() {
 
     let mut filestr = String::new();
     let result = file.read_to_string(&mut filestr).unwrap();
-    println!("Read {} bytes", result);
+    // println!("Read {} bytes", result);
 
     let result = parse_iwlist(&filestr).unwrap();
     assert_eq!(expected[0], result[0]);
@@ -342,7 +335,7 @@ fn should_parse_airport() {
 
     let mut filestr = String::new();
     let result = file.read_to_string(&mut filestr).unwrap();
-    println!("Read {} bytes", result);
+    // println!("Read {} bytes", result);
 
     let result = parse_airport(&filestr).unwrap();
     let last = result.len() - 1;
