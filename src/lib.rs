@@ -82,8 +82,17 @@ pub fn scan() -> Result<Vec<Wifi>, Error> {
 /// Returns a list of WiFi hotspots in your area - (Linux) uses `iwlist`
 #[cfg(target_os="linux")]
 pub fn scan() -> Result<Vec<Wifi>, Error> {
+    use std::env;
     use std::process::Command;
-    let output = try!(Command::new("/usr/bin/iwlist")
+
+    const PATH_ENV: &'static str = "PATH";
+    let path_system = "/usr/sbin:/sbin";
+    let path = env::var_os(PATH_ENV).map_or(path_system.to_string(), |v| {
+        format!("{}:{}", v.to_string_lossy().into_owned(), path_system)
+    });
+
+    let output = try!(Command::new("iwlist")
+                          .env(PATH_ENV, path)
                           .arg("scan")
                           .output()
                           .map_err(|_| Error::CommandNotFound));
