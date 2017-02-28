@@ -1,11 +1,10 @@
 # wifiscanner
 
-[![Build Status](https://travis-ci.org/booyaa/wifiscanner.svg?branch=master)](https://travis-ci.org/booyaa/wifiscanner)
+[![Build Status](https://travis-ci.org/booyaa/wifiscanner.svg?branch=mo_betta_regex)](https://travis-ci.org/booyaa/wifiscanner)
 
 A crate to list WiFi hotspots in your area.
 
-As of v0.3.x now supports OSX and Linux. Windows to
-follow.
+As of v0.4.x was rewritten because the regex and tests were ugly.
 
 Inspired by Maurice Svay's node-wifiscanner (https://github.com/mauricesvay/node-wifiscanner)
 
