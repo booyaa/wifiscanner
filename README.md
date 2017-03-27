@@ -38,6 +38,12 @@ println!("{:?}", wifiscanner::scan());
 Alternatively if you've cloned the the Git repo, you can run the above example
 using: `cargo run --example scan`.
 
+# Changelog
+
+- 0.3.5 - remove hardcoded path for iwlist (props to @alopatindev)
+- 0.3.4 - initial stable release
+
+
 # Copyright
 
 Copyright 2016 Mark Sta Ana.
