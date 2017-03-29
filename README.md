@@ -42,6 +42,7 @@ using: `cargo run --example scan`.
 
 # Changelog
 
+- 0.3.6 - crates.io metadata update
 - 0.3.5 - remove hardcoded path for iwlist (props to @alopatindev)
 - 0.3.4 - initial stable release
 
