@@ -9,5 +9,8 @@ readme = "README.md"
 keywords = ["wifi","hotspots","network"]
 license = "Apache-2.0"
 
-[dependencies]
+[target.'cfg(any(target_os = "macos", target_os = "linux"))'.dependencies]
 regex = "0.1"
+
+[target.'cfg(target_os = "openbsd")'.dependencies]
+nix = "0.9.*"
