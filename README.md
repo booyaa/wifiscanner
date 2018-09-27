@@ -37,7 +37,7 @@ use wifiscanner;
 println!("{:?}", wifiscanner::scan());
 ```
 
-Alternatively if you've cloned the the Git repo, you can run the above example
+Alternatively if you've cloned the Git repo, you can run the above example
 using: `cargo run --example scan`.
 
 # Changelog
