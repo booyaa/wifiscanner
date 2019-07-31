@@ -59,6 +59,7 @@ pub struct Wifi {
     /// hotspot name
     pub ssid: String,
     pub channel: String,
+    /// wifi signal strength in dBm
     pub signal_level: String,
     /// this field is currently empty in the Linux version of the lib
     pub security: String,
