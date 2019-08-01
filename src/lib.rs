@@ -37,12 +37,12 @@
 //! using: `cargo run --example scan`.
 
 extern crate regex;
+
 #[doc(no_inline)]
 use regex::Regex;
 
-
 #[allow(missing_docs)]
-#[derive(Debug,PartialEq,Eq)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum Error {
     SyntaxRegexError,
     CommandNotFound,
@@ -52,7 +52,7 @@ pub enum Error {
 }
 
 /// Wifi struct used to return information about wifi hotspots
-#[derive(Debug,PartialEq,Eq)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct Wifi {
     /// mac address
     pub mac: String,
@@ -66,14 +66,14 @@ pub struct Wifi {
 }
 
 /// Returns a list of WiFi hotspots in your area - (OSX/MacOS) uses `airport`
-#[cfg(target_os="macos")]
+#[cfg(target_os = "macos")]
 pub fn scan() -> Result<Vec<Wifi>, Error> {
     use std::process::Command;
-    let output = try!(Command::new("/System/Library/PrivateFrameworks/Apple80211.\
+    let output = Command::new("/System/Library/PrivateFrameworks/Apple80211.\
     framework/Versions/Current/Resources/airport")
-                          .arg("-s")
-                          .output()
-                          .map_err(|_| Error::CommandNotFound));
+        .arg("-s")
+        .output()
+        .map_err(|_| Error::CommandNotFound)?;
 
     let data = String::from_utf8_lossy(&output.stdout);
 
@@ -81,7 +81,7 @@ pub fn scan() -> Result<Vec<Wifi>, Error> {
 }
 
 /// Returns a list of WiFi hotspots in your area - (Linux) uses `iwlist`
-#[cfg(target_os="linux")]
+#[cfg(target_os = "linux")]
 pub fn scan() -> Result<Vec<Wifi>, Error> {
     use std::env;
     use std::process::Command;
@@ -92,11 +92,11 @@ pub fn scan() -> Result<Vec<Wifi>, Error> {
         format!("{}:{}", v.to_string_lossy().into_owned(), path_system)
     });
 
-    let output = try!(Command::new("iwlist")
-                          .env(PATH_ENV, path)
-                          .arg("scan")
-                          .output()
-                          .map_err(|_| Error::CommandNotFound));
+    let output = Command::new("iwlist")
+        .env(PATH_ENV, path)
+        .arg("scan")
+        .output()
+        .map_err(|_| Error::CommandNotFound)?;
 
     let data = String::from_utf8_lossy(&output.stdout);
 
@@ -141,12 +141,12 @@ fn parse_airport(network_list: &str) -> Result<Vec<Wifi>, Error> {
 fn parse_iwlist(network_list: &str) -> Result<Vec<Wifi>, Error> {
     let mut wifis: Vec<Wifi> = Vec::new();
 
-    let cell_regex = try!(Regex::new(r"Cell [0-9]{2,} - Address:")
-                              .map_err(|_| Error::SyntaxRegexError));
+    let cell_regex = Regex::new(r"Cell [0-9]{2,} - Address:")
+        .map_err(|_| Error::SyntaxRegexError)?;
 
     let mac_regex =
-        try!(Regex::new(r"([0-9a-zA-Z]{1}[0-9a-zA-Z]{1}[:]{1}){5}[0-9a-zA-Z]{1}[0-9a-zA-Z]{1}")
-                 .map_err(|_| Error::SyntaxRegexError));
+        Regex::new(r"([0-9a-zA-Z]{1}[0-9a-zA-Z]{1}[:]{1}){5}[0-9a-zA-Z]{1}[0-9a-zA-Z]{1}")
+            .map_err(|_| Error::SyntaxRegexError)?;
 
     for block in cell_regex.split(&network_list) {
         let mut lines = block.lines();
@@ -157,7 +157,7 @@ fn parse_iwlist(network_list: &str) -> Result<Vec<Wifi>, Error> {
         let mut wifi_rssi = String::new();
         let wifi_security = String::new(); // FIXME needs implementing
 
-        let mac_matches = mac_regex.captures(try!(lines.next().ok_or(Error::NoValue)));
+        let mac_matches = mac_regex.captures(lines.next().ok_or(Error::NoValue)?);
 
         if let Some(matches) = mac_matches {
             if let Some(mac) = matches.at(0) {
@@ -171,29 +171,29 @@ fn parse_iwlist(network_list: &str) -> Result<Vec<Wifi>, Error> {
                 wifi_ssid = ssid.to_string();
             } else if line.find("Frequency:").is_some() {
                 wifi_channel = line.split("Channel")
-                                   .nth(1)
-                                   .unwrap_or("")
-                                   .replace(")", "")
-                                   .trim()
-                                   .to_string();
+                    .nth(1)
+                    .unwrap_or("")
+                    .replace(")", "")
+                    .trim()
+                    .to_string();
                 // println!("Channel: {}", wifi_channel);
             } else if line.find("Signal level").is_some() {
                 if line.find("Quality").is_some() {
                     // case1
                     wifi_rssi = line.split("Signal level=")
-                                    .nth(1)
-                                    .unwrap_or("")
-                                    .replace("dBm", "")
-                                    .trim()
-                                    .to_string();
+                        .nth(1)
+                        .unwrap_or("")
+                        .replace("dBm", "")
+                        .trim()
+                        .to_string();
                     // println!("Signal level (case1): {}", wifi_rssi);
                 } else {
-                    let re = try!(Regex::new(r"Signal level=(\d+)/100")
-                                      .map_err(|_| Error::SyntaxRegexError));
-                    let value_raw = try!(try!(re.captures(line).ok_or(Error::FailedToParse))
-                                             .at(1)
-                                             .ok_or(Error::NoValue));
-                    let value = try!(value_raw.parse::<i32>().map_err(|_| Error::FailedToParse));
+                    let re = Regex::new(r"Signal level=(\d+)/100")
+                        .map_err(|_| Error::SyntaxRegexError)?;
+                    let value_raw = re.captures(line).ok_or(Error::FailedToParse)?
+                        .at(1)
+                        .ok_or(Error::NoValue)?;
+                    let value = value_raw.parse::<i32>().map_err(|_| Error::FailedToParse)?;
                     let strength_calc = ((100 * value) / 100) / 2 - 100;
                     wifi_rssi = strength_calc.to_string();
 
