@@ -108,7 +108,15 @@ pub fn scan() -> Result<Vec<Wifi>, Error> {
 /// Returns a list of WiFi hotspots in your area - (Windows) uses `netsh`
 #[cfg(target_os = "windows")]
 pub fn scan() -> Result<Vec<Wifi>, Error> {
-    Err(Error::CommandNotFound)
+    use std::process::Command;
+    let output = Command::new("netsh.exe")
+        .args(&["wlan", "show", "networks", "mode=Bssid"])
+        .output()
+        .map_err(|_| Error::CommandNotFound)?;
+
+    let data = String::from_utf8_lossy(&output.stdout);
+
+    parse_netsh(&data)
 }
 
 #[allow(dead_code)]
