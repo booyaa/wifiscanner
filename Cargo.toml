@@ -10,4 +10,5 @@ keywords = ["wifi","hotspots","network"]
 license = "Apache-2.0"
 
 [dependencies]
+itertools = "0.8.0"
 regex = "0.1"
