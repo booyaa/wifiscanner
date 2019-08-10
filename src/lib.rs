@@ -191,7 +191,6 @@ fn parse_iwlist(network_list: &str) -> Result<Vec<Wifi>, Error> {
                     .replace(")", "")
                     .trim()
                     .to_string();
-                // println!("Channel: {}", wifi_channel);
             } else if line.find("Signal level").is_some() {
                 if line.find("Quality").is_some() {
                     // case1
@@ -201,7 +200,6 @@ fn parse_iwlist(network_list: &str) -> Result<Vec<Wifi>, Error> {
                         .replace("dBm", "")
                         .trim()
                         .to_string();
-                    // println!("Signal level (case1): {}", wifi_rssi);
                 } else {
                     let re = Regex::new(r"Signal level=(\d+)/100")
                         .map_err(|_| Error::SyntaxRegexError)?;
@@ -211,8 +209,6 @@ fn parse_iwlist(network_list: &str) -> Result<Vec<Wifi>, Error> {
                     let value = value_raw.parse::<i32>().map_err(|_| Error::FailedToParse)?;
                     let strength_calc = ((100 * value) / 100) / 2 - 100;
                     wifi_rssi = strength_calc.to_string();
-
-                    // println!("Signal level (case3): {}", wifi_rssi);
                 }
             }
 
@@ -321,8 +317,7 @@ fn should_parse_iwlist_type_1() {
     let mut file = File::open(&file_path).unwrap();
 
     let mut filestr = String::new();
-    let result = file.read_to_string(&mut filestr).unwrap();
-    // println!("Read {} bytes", result);
+    file.read_to_string(&mut filestr).unwrap();
 
     let result = parse_iwlist(&filestr).unwrap();
     assert_eq!(expected[0], result[0]);
@@ -365,8 +360,7 @@ fn should_parse_iwlist_type_2() {
     let mut file = File::open(&file_path).unwrap();
 
     let mut filestr = String::new();
-    let result = file.read_to_string(&mut filestr).unwrap();
-    // println!("Read {} bytes", result);
+    file.read_to_string(&mut filestr).unwrap();
 
     let result = parse_iwlist(&filestr).unwrap();
     assert_eq!(expected[0], result[0]);
@@ -408,8 +402,7 @@ fn should_parse_airport() {
     let mut file = File::open(&file_path).unwrap();
 
     let mut filestr = String::new();
-    let result = file.read_to_string(&mut filestr).unwrap();
-    // println!("Read {} bytes", result);
+    file.read_to_string(&mut filestr).unwrap();
 
     let result = parse_airport(&filestr).unwrap();
     let last = result.len() - 1;
