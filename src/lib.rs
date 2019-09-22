@@ -88,16 +88,22 @@ pub fn scan() -> Result<Vec<Wifi>, Error> {
         format!("{}:{}", v.to_string_lossy().into_owned(), path_system)
     });
 
-    // TODO: get interface name with iw dev first
+    let output = Command::new("iw")
+        .env(PATH_ENV, path.clone())
+        .arg("dev")
+        .output()
+        .map_err(|_| Error::CommandNotFound)?;
+    let data = String::from_utf8_lossy(&output.stdout);
+    let interface = parse_iw_dev(&data)?;
 
-    let output = try!(Command::new("iw")
+    let output = Command::new("iw")
         .env(PATH_ENV, path)
+        .arg("dev")
+        .arg(interface)
         .arg("scan")
         .output()
-        .map_err(|_| Error::CommandNotFound));
-
+        .map_err(|_| Error::CommandNotFound)?;
     let data = String::from_utf8_lossy(&output.stdout);
-
     parse_iw_dev_scan(&data)
 }
 
@@ -136,6 +142,18 @@ fn parse_airport(network_list: &str) -> Result<Vec<Wifi>, Error> {
     }
 
     Ok(wifis)
+}
+
+fn parse_iw_dev(interfaces: &str) -> Result<String, Error> {
+    interfaces
+        .split("\tInterface ")
+        .take(2)
+        .last()
+        .ok_or(Error::NoValue)?
+        .split("\n")
+        .nth(0)
+        .ok_or(Error::NoValue)
+        .map(|text| text.to_string())
 }
 
 fn parse_iw_dev_scan(network_list: &str) -> Result<Vec<Wifi>, Error> {
@@ -181,6 +199,32 @@ fn extract_value(
     } else {
         Err(Error::NoValue)
     }
+}
+
+#[test]
+fn should_parse_iw_dev() {
+    let expected = "wlp2s0";
+
+    // FIXME: should be a better way to create test fixtures
+    use std::path::PathBuf;
+    let mut path = PathBuf::new();
+    path.push("tests");
+    path.push("fixtures");
+    path.push("iw");
+    path.push("iw_dev_01.txt");
+
+    let file_path = path.as_os_str();
+
+    use std::fs::File;
+    use std::io::Read;
+
+    let mut file = File::open(&file_path).unwrap();
+
+    let mut filestr = String::new();
+    let _ = file.read_to_string(&mut filestr).unwrap();
+
+    let result = parse_iw_dev(&filestr).unwrap();
+    assert_eq!(expected, result);
 }
 
 #[test]
