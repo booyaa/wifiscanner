@@ -40,9 +40,8 @@ extern crate regex;
 #[doc(no_inline)]
 use regex::Regex;
 
-
 #[allow(missing_docs)]
-#[derive(Debug,PartialEq,Eq)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum Error {
     SyntaxRegexError,
     CommandNotFound,
@@ -52,7 +51,7 @@ pub enum Error {
 }
 
 /// Wifi struct used to return information about wifi hotspots
-#[derive(Debug,PartialEq,Eq)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct Wifi {
     /// mac address
     pub mac: String,
@@ -65,22 +64,24 @@ pub struct Wifi {
 }
 
 /// Returns a list of WiFi hotspots in your area - (OSX/MacOS) uses `airport`
-#[cfg(target_os="macos")]
+#[cfg(target_os = "macos")]
 pub fn scan() -> Result<Vec<Wifi>, Error> {
     use std::process::Command;
-    let output = try!(Command::new("/System/Library/PrivateFrameworks/Apple80211.\
-    framework/Versions/Current/Resources/airport")
-                          .arg("-s")
-                          .output()
-                          .map_err(|_| Error::CommandNotFound));
+    let output = try!(Command::new(
+        "/System/Library/PrivateFrameworks/Apple80211.\
+         framework/Versions/Current/Resources/airport"
+    )
+    .arg("-s")
+    .output()
+    .map_err(|_| Error::CommandNotFound));
 
     let data = String::from_utf8_lossy(&output.stdout);
 
     parse_airport(&data)
 }
 
-/// Returns a list of WiFi hotspots in your area - (Linux) uses `iwlist`
-#[cfg(target_os="linux")]
+/// Returns a list of WiFi hotspots in your area - (Linux) uses `iw`
+#[cfg(target_os = "linux")]
 pub fn scan() -> Result<Vec<Wifi>, Error> {
     use std::env;
     use std::process::Command;
@@ -91,17 +92,18 @@ pub fn scan() -> Result<Vec<Wifi>, Error> {
         format!("{}:{}", v.to_string_lossy().into_owned(), path_system)
     });
 
-    let output = try!(Command::new("iwlist")
-                          .env(PATH_ENV, path)
-                          .arg("scan")
-                          .output()
-                          .map_err(|_| Error::CommandNotFound));
+    // TODO: get interface name with iw dev first
+
+    let output = try!(Command::new("iw")
+        .env(PATH_ENV, path)
+        .arg("scan")
+        .output()
+        .map_err(|_| Error::CommandNotFound));
 
     let data = String::from_utf8_lossy(&output.stdout);
 
-    parse_iwlist(&data)
+    parse_iw_dev_scan(&data)
 }
-
 
 #[allow(dead_code)]
 fn parse_airport(network_list: &str) -> Result<Vec<Wifi>, Error> {
@@ -113,9 +115,13 @@ fn parse_airport(network_list: &str) -> Result<Vec<Wifi>, Error> {
     // FIXME: Turn these into non panicking Errors (ok_or breaks it)
     let col_mac = headers_string.find("BSSID").expect("failed to find BSSID");
     let col_rrsi = headers_string.find("RSSI").expect("failed to find RSSI");
-    let col_channel = headers_string.find("CHANNEL").expect("failed to find CHANNEL");
+    let col_channel = headers_string
+        .find("CHANNEL")
+        .expect("failed to find CHANNEL");
     let col_ht = headers_string.find("HT").expect("failed to find HT");
-    let col_security = headers_string.find("SECURITY").expect("failed to find SECURITY");
+    let col_security = headers_string
+        .find("SECURITY")
+        .expect("failed to find SECURITY");
 
     for line in lines {
         let ssid = &line[..col_mac].trim();
@@ -137,15 +143,16 @@ fn parse_airport(network_list: &str) -> Result<Vec<Wifi>, Error> {
 }
 
 #[allow(dead_code)]
-fn parse_iwlist(network_list: &str) -> Result<Vec<Wifi>, Error> {
+fn parse_iw_dev_scan(network_list: &str) -> Result<Vec<Wifi>, Error> {
     let mut wifis: Vec<Wifi> = Vec::new();
 
-    let cell_regex = try!(Regex::new(r"Cell [0-9]{2,} - Address:")
-                              .map_err(|_| Error::SyntaxRegexError));
+    let cell_regex =
+        try!(Regex::new(r"Cell [0-9]{2,} - Address:").map_err(|_| Error::SyntaxRegexError));
 
-    let mac_regex =
-        try!(Regex::new(r"([0-9a-zA-Z]{1}[0-9a-zA-Z]{1}[:]{1}){5}[0-9a-zA-Z]{1}[0-9a-zA-Z]{1}")
-                 .map_err(|_| Error::SyntaxRegexError));
+    let mac_regex = try!(Regex::new(
+        r"([0-9a-zA-Z]{1}[0-9a-zA-Z]{1}[:]{1}){5}[0-9a-zA-Z]{1}[0-9a-zA-Z]{1}"
+    )
+    .map_err(|_| Error::SyntaxRegexError));
 
     for block in cell_regex.split(&network_list) {
         let mut lines = block.lines();
@@ -169,29 +176,32 @@ fn parse_iwlist(network_list: &str) -> Result<Vec<Wifi>, Error> {
                 let ssid = line.split(":").nth(1).unwrap_or("").replace("\"", "");
                 wifi_ssid = ssid.to_string();
             } else if line.find("Frequency:").is_some() {
-                wifi_channel = line.split("Channel")
-                                   .nth(1)
-                                   .unwrap_or("")
-                                   .replace(")", "")
-                                   .trim()
-                                   .to_string();
-                // println!("Channel: {}", wifi_channel);
+                wifi_channel = line
+                    .split("Channel")
+                    .nth(1)
+                    .unwrap_or("")
+                    .replace(")", "")
+                    .trim()
+                    .to_string();
+            // println!("Channel: {}", wifi_channel);
             } else if line.find("Signal level").is_some() {
                 if line.find("Quality").is_some() {
                     // case1
-                    wifi_rssi = line.split("Signal level=")
-                                    .nth(1)
-                                    .unwrap_or("")
-                                    .replace("dBm", "")
-                                    .trim()
-                                    .to_string();
-                    // println!("Signal level (case1): {}", wifi_rssi);
+                    wifi_rssi = line
+                        .split("Signal level=")
+                        .nth(1)
+                        .unwrap_or("")
+                        .replace("dBm", "")
+                        .trim()
+                        .to_string();
+                // println!("Signal level (case1): {}", wifi_rssi);
                 } else {
-                    let re = try!(Regex::new(r"Signal level=(\d+)/100")
-                                      .map_err(|_| Error::SyntaxRegexError));
+                    let re =
+                        try!(Regex::new(r"Signal level=(\d+)/100")
+                            .map_err(|_| Error::SyntaxRegexError));
                     let value_raw = try!(try!(re.captures(line).ok_or(Error::FailedToParse))
-                                             .at(1)
-                                             .ok_or(Error::NoValue));
+                        .at(1)
+                        .ok_or(Error::NoValue));
                     let value = try!(value_raw.parse::<i32>().map_err(|_| Error::FailedToParse));
                     let strength_calc = ((100 * value) / 100) / 2 - 100;
                     wifi_rssi = strength_calc.to_string();
@@ -199,7 +209,6 @@ fn parse_iwlist(network_list: &str) -> Result<Vec<Wifi>, Error> {
                     // println!("Signal level (case3): {}", wifi_rssi);
                 }
             }
-
 
             // FIXME make less vomit inducing
             if !wifi_ssid.is_empty() && !wifi_mac.is_empty() && !wifi_rssi.is_empty() {
@@ -222,21 +231,21 @@ fn parse_iwlist(network_list: &str) -> Result<Vec<Wifi>, Error> {
 }
 
 #[test]
-fn should_parse_iwlist_type_1() {
+fn should_parse_iw_dev_scan() {
     let mut expected: Vec<Wifi> = Vec::new();
     expected.push(Wifi {
-        mac: "00:35:1A:6F:0F:40".to_string(),
-        ssid: "TEST-Wifi".to_string(),
-        channel: "6".to_string(),
-        signal_level: "-72".to_string(),
+        mac: "11:22:33:44:55:66".to_string(),
+        ssid: "hello".to_string(),
+        channel: "10".to_string(),
+        signal_level: "-67".to_string(),
         security: "".to_string(),
     });
 
     expected.push(Wifi {
-        mac: "00:F2:8B:8F:58:77".to_string(),
-        ssid: "<hidden>".to_string(),
-        channel: "11".to_string(),
-        signal_level: "-71".to_string(),
+        mac: "66:77:88:99:aa:bb".to_string(),
+        ssid: "hello-world-foo-bar".to_string(),
+        channel: "8".to_string(),
+        signal_level: "-89".to_string(),
         security: "".to_string(),
     });
 
@@ -245,8 +254,8 @@ fn should_parse_iwlist_type_1() {
     let mut path = PathBuf::new();
     path.push("tests");
     path.push("fixtures");
-    path.push("iwlist");
-    path.push("iwlist01_ubuntu1404.txt");
+    path.push("iw");
+    path.push("iw_dev_scan_01.txt");
 
     let file_path = path.as_os_str();
 
@@ -259,53 +268,9 @@ fn should_parse_iwlist_type_1() {
     let result = file.read_to_string(&mut filestr).unwrap();
     // println!("Read {} bytes", result);
 
-    let result = parse_iwlist(&filestr).unwrap();
+    let result = parse_iw_dev_scan(&filestr).unwrap();
     assert_eq!(expected[0], result[0]);
-    assert_eq!(expected[1], result[28]);
-}
-
-#[test]
-fn should_parse_iwlist_type_2() {
-    let mut expected: Vec<Wifi> = Vec::new();
-
-    expected.push(Wifi {
-        mac: "D4:D1:84:50:76:45".to_string(),
-        ssid: "gsy-97796".to_string(),
-        channel: "6".to_string(),
-        signal_level: "-76".to_string(),
-        security: "".to_string(),
-    });
-
-    expected.push(Wifi {
-        mac: "7C:B7:33:AE:3B:05".to_string(),
-        ssid: "visitor-18170".to_string(),
-        channel: "9".to_string(),
-        signal_level: "-70".to_string(),
-        security: "".to_string(),
-    });
-
-    // FIXME: should be a better way to create test fixtures
-    use std::path::PathBuf;
-    let mut path = PathBuf::new();
-    path.push("tests");
-    path.push("fixtures");
-    path.push("iwlist");
-    path.push("iwlist02_raspi.txt");
-
-    let file_path = path.as_os_str();
-
-    use std::fs::File;
-    use std::io::Read;
-
-    let mut file = File::open(&file_path).unwrap();
-
-    let mut filestr = String::new();
-    let result = file.read_to_string(&mut filestr).unwrap();
-    // println!("Read {} bytes", result);
-
-    let result = parse_iwlist(&filestr).unwrap();
-    assert_eq!(expected[0], result[0]);
-    assert_eq!(expected[1], result[2]);
+    assert_eq!(expected[1], result[5]);
 }
 
 #[test]
