@@ -8,7 +8,7 @@
 
 //! A crate to list WiFi hotspots in your area.
 //!
-//! As of v0.3.x now supports OSX and Linux. Windows to follow.
+//! As of v0.4.x now supports OSX and Linux. Windows to follow.
 //!
 //! # Usage
 //!
@@ -17,7 +17,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! wifiscanner = "0.3.*"
+//! wifiscanner = "0.4.*"
 //! ```
 //!
 //! and this to your crate root:
@@ -144,6 +144,7 @@ fn parse_airport(network_list: &str) -> Result<Vec<Wifi>, Error> {
     Ok(wifis)
 }
 
+#[allow(dead_code)]
 fn parse_iw_dev(interfaces: &str) -> Result<String, Error> {
     interfaces
         .split("\tInterface ")
@@ -156,6 +157,7 @@ fn parse_iw_dev(interfaces: &str) -> Result<String, Error> {
         .map(|text| text.to_string())
 }
 
+#[allow(dead_code)]
 fn parse_iw_dev_scan(network_list: &str) -> Result<Vec<Wifi>, Error> {
     // TODO: implement wifi.security
     let mut wifis: Vec<Wifi> = Vec::new();
@@ -184,6 +186,7 @@ fn parse_iw_dev_scan(network_list: &str) -> Result<Vec<Wifi>, Error> {
     Ok(wifis)
 }
 
+#[allow(dead_code)]
 fn extract_value(
     line: &str,
     pattern_start: &str,

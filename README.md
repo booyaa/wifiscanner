@@ -6,7 +6,7 @@
 
 A crate to list WiFi hotspots in your area.
 
-As of v0.3.x now supports OSX and Linux. Windows to
+As of v0.4.x now supports OSX and Linux. Windows to
 follow.
 
 Inspired by Maurice Svay's node-wifiscanner (https://github.com/mauricesvay/node-wifiscanner)
@@ -22,7 +22,7 @@ used by adding `wifiscanner` to the dependencies in your project's `Cargo.toml`.
 
 ```toml
 [dependencies]
-wifiscanner = "0.3.*"
+wifiscanner = "0.4.*"
 ```
 
 and this to your crate root:
@@ -42,6 +42,7 @@ using: `cargo run --example scan`.
 
 # Changelog
 
+- 0.4.0 - replace iwlist with iw (props to @alopatindev)
 - 0.3.6 - crates.io metadata update
 - 0.3.5 - remove hardcoded path for iwlist (props to @alopatindev)
 - 0.3.4 - initial stable release
@@ -49,7 +50,7 @@ using: `cargo run --example scan`.
 
 # Copyright
 
-Copyright 2016 Mark Sta Ana.
+Copyright 2019 Mark Sta Ana.
 
 Licensed under the Apache License, Version 2.0 <LICENSE-APACHE or
 http://www.apache.org/licenses/LICENSE-2.0> at your option. This file may not
