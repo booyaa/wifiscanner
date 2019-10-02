@@ -13,7 +13,7 @@ Inspired by Maurice Svay's node-wifiscanner (https://github.com/mauricesvay/node
 
 Tests shameless pilfered from Christian Kuster's node-wifi-scanner (https://github.com/ancasicolica/node-wifi-scanner)
 
-Full documentation can be found [here](https://booyaa.github.io/wifiscanner/wifiscanner/index.html).
+Full documentation can be found [here](https://docs.rs/wifiscanner).
 
 # Usage
 
@@ -30,6 +30,7 @@ and this to your crate root:
 ```rust
 extern crate wifiscanner;
 ```
+
 # Example
 
 ```rust
@@ -46,7 +47,6 @@ using: `cargo run --example scan`.
 - 0.3.6 - crates.io metadata update
 - 0.3.5 - remove hardcoded path for iwlist (props to @alopatindev)
 - 0.3.4 - initial stable release
-
 
 # Copyright
 
