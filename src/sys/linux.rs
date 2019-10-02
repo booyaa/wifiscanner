@@ -1,4 +1,4 @@
-use crate::{Wifi, Error};
+use crate::{Error, Wifi};
 
 /// Returns a list of WiFi hotspots in your area - (Linux) uses `iw`
 pub(crate) fn scan() -> Result<Vec<Wifi>, Error> {
