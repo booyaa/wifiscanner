@@ -1,0 +1,58 @@
+name: CI
+on:
+  push:
+    paths-ignore:
+      - README.md
+jobs:
+  pre-test:
+    name: Check/Rustfmt/Clippy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      - name: Check
+        uses: actions-rs/cargo@v1
+        with:
+          command: check
+      - name: Rustfmt
+        uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: -- --check
+      # Workaround because clippy doesn't report any errors
+      # if executed after cargo check
+      # https://github.com/rust-lang/rust-clippy/issues/4612
+      - name: Clean
+        uses: actions-rs/cargo@v1
+        with:
+          command: clean
+      - name: Clippy
+        uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+
+  test:
+    name: Test
+    needs: pre-test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macOS-latest]
+        toolchain: [stable, beta, nightly]
+    env:
+      # Print the full traceback if a test fails
+      RUST_BACKTRACE: 1
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ matrix.toolchain }}
+          override: true
+      - name: Test
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
