@@ -19,7 +19,12 @@ jobs:
         with:
           command: fmt
           args: -- --check
-      - run: cargo clippy -- --version
+      # Workaround because clippy doesn't report any errors
+      # if executed after cargo check
+      - name: Clean
+        uses: actions-rs/cargo@v1
+        with:
+          command: clean
       - name: Clippy
         uses: actions-rs/cargo@v1
         with:
