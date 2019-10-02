@@ -30,7 +30,6 @@ pub(crate) fn scan() -> Result<Vec<Wifi>, Error> {
     parse_iw_dev_scan(&data)
 }
 
-#[allow(dead_code)]
 fn parse_iw_dev(interfaces: &str) -> Result<String, Error> {
     interfaces
         .split("\tInterface ")

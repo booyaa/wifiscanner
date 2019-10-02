@@ -1,4 +1,4 @@
-use crate::{Wifi, Error};
+use crate::{Error, Wifi};
 
 /// Returns a list of WiFi hotspots in your area - (OSX/MacOS) uses `airport`
 pub(crate) fn scan() -> Result<Vec<Wifi>, Error> {
@@ -19,7 +19,11 @@ pub(crate) fn scan() -> Result<Vec<Wifi>, Error> {
 fn parse_airport(network_list: &str) -> Result<Vec<Wifi>, Error> {
     let mut wifis: Vec<Wifi> = Vec::new();
     let mut lines = network_list.lines();
-    let headers = lines.next().unwrap();
+    let headers = match lines.next() {
+        Some(v) => v,
+        // return an empty list of WiFi if the network_list is empty
+        None => return Ok(vec![]),
+    };
 
     let headers_string = String::from(headers);
     // FIXME: Turn these into non panicking Errors (ok_or breaks it)
