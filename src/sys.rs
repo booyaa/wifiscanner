@@ -7,3 +7,6 @@ pub(crate) use self::macos::*;
 mod linux;
 #[cfg(target_os = "linux")]
 pub(crate) use self::linux::*;
+
+#[cfg(not(any(target_os = "macos", target_os = "linux")))]
+compile_error!("wifiscan doesn't compile for this platform yet");
