@@ -21,6 +21,7 @@ jobs:
           args: -- --check
       # Workaround because clippy doesn't report any errors
       # if executed after cargo check
+      # https://github.com/rust-lang/rust-clippy/issues/4612
       - name: Clean
         uses: actions-rs/cargo@v1
         with:
