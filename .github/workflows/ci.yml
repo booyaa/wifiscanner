@@ -1,5 +1,8 @@
 name: CI
-on: push
+on:
+  push:
+    paths-ignore:
+      - README.md
 jobs:
   pre-test:
     name: Check/Rustfmt/Clippy
