@@ -48,6 +48,13 @@ using: `cargo run --example scan`.
 - 0.3.5 - remove hardcoded path for iwlist (props to @alopatindev)
 - 0.3.4 - initial stable release
 
+# Contributors
+
+wifiscanner would not be possible without the following folks:
+
+@alopatindev, @bizzu, @bash, @cristicbz, @lpmi-13
+
+
 # Copyright
 
 Copyright 2019 Mark Sta Ana.
