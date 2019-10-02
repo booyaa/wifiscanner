@@ -56,45 +56,49 @@ fn parse_airport(network_list: &str) -> Result<Vec<Wifi>, Error> {
     Ok(wifis)
 }
 
-#[test]
-fn should_parse_airport() {
-    let mut expected: Vec<Wifi> = Vec::new();
-    expected.push(Wifi {
-        mac: "00:35:1a:90:56:03".to_string(),
-        ssid: "OurTest".to_string(),
-        channel: "112".to_string(),
-        signal_level: "-70".to_string(),
-        security: "WPA2(PSK/AES/AES)".to_string(),
-    });
-
-    expected.push(Wifi {
-        mac: "00:35:1a:90:56:00".to_string(),
-        ssid: "TEST-Wifi".to_string(),
-        channel: "1".to_string(),
-        signal_level: "-67".to_string(),
-        security: "WPA2(PSK/AES/AES)".to_string(),
-    });
-
-    // FIXME: should be a better way to create test fixtures
-    use std::path::PathBuf;
-    let mut path = PathBuf::new();
-    path.push("tests");
-    path.push("fixtures");
-    path.push("airport");
-    path.push("airport01.txt");
-
-    let file_path = path.as_os_str();
-
+#[cfg(test)]
+mod tests {
+    use super::*;
     use std::fs::File;
     use std::io::Read;
+    use std::path::PathBuf;
 
-    let mut file = File::open(&file_path).unwrap();
+    #[test]
+    fn should_parse_airport() {
+        let mut expected: Vec<Wifi> = Vec::new();
+        expected.push(Wifi {
+            mac: "00:35:1a:90:56:03".to_string(),
+            ssid: "OurTest".to_string(),
+            channel: "112".to_string(),
+            signal_level: "-70".to_string(),
+            security: "WPA2(PSK/AES/AES)".to_string(),
+        });
 
-    let mut filestr = String::new();
-    let _ = file.read_to_string(&mut filestr).unwrap();
+        expected.push(Wifi {
+            mac: "00:35:1a:90:56:00".to_string(),
+            ssid: "TEST-Wifi".to_string(),
+            channel: "1".to_string(),
+            signal_level: "-67".to_string(),
+            security: "WPA2(PSK/AES/AES)".to_string(),
+        });
 
-    let result = parse_airport(&filestr).unwrap();
-    let last = result.len() - 1;
-    assert_eq!(expected[0], result[0]);
-    assert_eq!(expected[1], result[last]);
+        // FIXME: should be a better way to create test fixtures
+        let mut path = PathBuf::new();
+        path.push("tests");
+        path.push("fixtures");
+        path.push("airport");
+        path.push("airport01.txt");
+
+        let file_path = path.as_os_str();
+
+        let mut file = File::open(&file_path).unwrap();
+
+        let mut filestr = String::new();
+        let _ = file.read_to_string(&mut filestr).unwrap();
+
+        let result = parse_airport(&filestr).unwrap();
+        let last = result.len() - 1;
+        assert_eq!(expected[0], result[0]);
+        assert_eq!(expected[1], result[last]);
+    }
 }

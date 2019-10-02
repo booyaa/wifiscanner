@@ -1,10 +1,9 @@
 use crate::{Error, Wifi};
+use std::env;
+use std::process::Command;
 
 /// Returns a list of WiFi hotspots in your area - (Linux) uses `iw`
 pub(crate) fn scan() -> Result<Vec<Wifi>, Error> {
-    use std::env;
-    use std::process::Command;
-
     const PATH_ENV: &'static str = "PATH";
     let path_system = "/usr/sbin:/sbin";
     let path = env::var_os(PATH_ENV).map_or(path_system.to_string(), |v| {
@@ -87,70 +86,70 @@ fn extract_value(
     }
 }
 
-#[test]
-fn should_parse_iw_dev() {
-    let expected = "wlp2s0";
-
-    // FIXME: should be a better way to create test fixtures
-    use std::path::PathBuf;
-    let mut path = PathBuf::new();
-    path.push("tests");
-    path.push("fixtures");
-    path.push("iw");
-    path.push("iw_dev_01.txt");
-
-    let file_path = path.as_os_str();
-
+#[cfg(test)]
+mod tests {
+    use super::*;
     use std::fs::File;
     use std::io::Read;
-
-    let mut file = File::open(&file_path).unwrap();
-
-    let mut filestr = String::new();
-    let _ = file.read_to_string(&mut filestr).unwrap();
-
-    let result = parse_iw_dev(&filestr).unwrap();
-    assert_eq!(expected, result);
-}
-
-#[test]
-fn should_parse_iw_dev_scan() {
-    let mut expected: Vec<Wifi> = Vec::new();
-    expected.push(Wifi {
-        mac: "11:22:33:44:55:66".to_string(),
-        ssid: "hello".to_string(),
-        channel: "10".to_string(),
-        signal_level: "-67.00".to_string(),
-        security: "".to_string(),
-    });
-
-    expected.push(Wifi {
-        mac: "66:77:88:99:aa:bb".to_string(),
-        ssid: "hello-world-foo-bar".to_string(),
-        channel: "8".to_string(),
-        signal_level: "-89.00".to_string(),
-        security: "".to_string(),
-    });
-
-    // FIXME: should be a better way to create test fixtures
     use std::path::PathBuf;
-    let mut path = PathBuf::new();
-    path.push("tests");
-    path.push("fixtures");
-    path.push("iw");
-    path.push("iw_dev_scan_01.txt");
 
-    let file_path = path.as_os_str();
+    #[test]
+    fn should_parse_iw_dev() {
+        let expected = "wlp2s0";
 
-    use std::fs::File;
-    use std::io::Read;
+        // FIXME: should be a better way to create test fixtures
+        let mut path = PathBuf::new();
+        path.push("tests");
+        path.push("fixtures");
+        path.push("iw");
+        path.push("iw_dev_01.txt");
 
-    let mut file = File::open(&file_path).unwrap();
+        let file_path = path.as_os_str();
 
-    let mut filestr = String::new();
-    let _ = file.read_to_string(&mut filestr).unwrap();
+        let mut file = File::open(&file_path).unwrap();
 
-    let result = parse_iw_dev_scan(&filestr).unwrap();
-    assert_eq!(expected[0], result[0]);
-    assert_eq!(expected[1], result[5]);
+        let mut filestr = String::new();
+        let _ = file.read_to_string(&mut filestr).unwrap();
+
+        let result = parse_iw_dev(&filestr).unwrap();
+        assert_eq!(expected, result);
+    }
+
+    #[test]
+    fn should_parse_iw_dev_scan() {
+        let mut expected: Vec<Wifi> = Vec::new();
+        expected.push(Wifi {
+            mac: "11:22:33:44:55:66".to_string(),
+            ssid: "hello".to_string(),
+            channel: "10".to_string(),
+            signal_level: "-67.00".to_string(),
+            security: "".to_string(),
+        });
+
+        expected.push(Wifi {
+            mac: "66:77:88:99:aa:bb".to_string(),
+            ssid: "hello-world-foo-bar".to_string(),
+            channel: "8".to_string(),
+            signal_level: "-89.00".to_string(),
+            security: "".to_string(),
+        });
+
+        // FIXME: should be a better way to create test fixtures
+        let mut path = PathBuf::new();
+        path.push("tests");
+        path.push("fixtures");
+        path.push("iw");
+        path.push("iw_dev_scan_01.txt");
+
+        let file_path = path.as_os_str();
+
+        let mut file = File::open(&file_path).unwrap();
+
+        let mut filestr = String::new();
+        let _ = file.read_to_string(&mut filestr).unwrap();
+
+        let result = parse_iw_dev_scan(&filestr).unwrap();
+        assert_eq!(expected[0], result[0]);
+        assert_eq!(expected[1], result[5]);
+    }
 }
