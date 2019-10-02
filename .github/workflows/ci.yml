@@ -30,3 +30,26 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: clippy
+
+  test:
+    name: Test
+    needs: pre-test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macOS-latest]
+        toolchain: [stable, beta, nightly]
+    env:
+      # Print the full traceback if a test fails
+      RUST_BACKTRACE: 1
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ matrix.toolchain }}
+          override: true
+      - name: Test
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
