@@ -48,6 +48,9 @@ using: `cargo run --example scan`.
 - 0.3.5 - remove hardcoded path for iwlist (props to @alopatindev)
 - 0.3.4 - initial stable release
 
+# How to contribute
+
+see [CONTRIBUTING.md](/CONTRIBUTING.md)
 # Contributors
 
 wifiscanner would not be possible without the following folks:
