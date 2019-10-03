@@ -8,11 +8,11 @@
 
 //! A crate to list WiFi hotspots in your area.
 //!
-//! As of v0.4.x now supports OSX and Linux. Windows to follow.
+//! As of v0.5.x now supports macOS, Linux and Windows.
 //!
 //! # Usage
 //!
-//! This crate is [on crates.io](https://crates.io/crates/wifiscanner) and can be
+//! This crate is on [crates.io](https://crates.io/crates/wifiscanner) and can be
 //! used by adding `wifiscanner` to the dependencies in your project's `Cargo.toml`.
 //!
 //! ```toml
@@ -56,6 +56,7 @@ pub struct Wifi {
     /// hotspot name
     pub ssid: String,
     pub channel: String,
+    /// wifi signal strength in dBm
     pub signal_level: String,
     /// this field is currently empty in the Linux version of the lib
     pub security: String,
