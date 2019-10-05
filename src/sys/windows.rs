@@ -1,3 +1,9 @@
+#[macro_use]
+extern crate itertools;
+extern crate regex;
+
+use regex::Regex;
+
 use crate::{Error, Wifi};
 
 /// Returns a list of WiFi hotspots in your area - (Windows) uses `netsh`
@@ -35,7 +41,7 @@ fn parse_netsh(network_list: &str) -> Result<Vec<Wifi>, Error> {
                 wifi_security = line.split(":").nth(1).unwrap_or("").trim().to_string();
             } else if line.find("BSSID").is_some() {
                 let captures = mac_regex.captures(line).unwrap();
-                wifi_macs.push(captures.at(0).unwrap());
+                wifi_macs.push(captures.get(0).unwrap());
             } else if line.find("Signal").is_some() {
                 let percent = line.split(":").nth(1).unwrap_or("").trim().replace("%", "");
                 let percent: i32 = percent.parse().unwrap();
@@ -47,7 +53,7 @@ fn parse_netsh(network_list: &str) -> Result<Vec<Wifi>, Error> {
 
         for (mac, channel, rssi) in izip!(wifi_macs, wifi_channels, wifi_rssi) {
             wifis.push(Wifi {
-                mac: mac.to_string(),
+                mac: mac.as_str().to_string(),
                 ssid: wifi_ssid.to_string(),
                 channel: channel.to_string(),
                 signal_level: rssi.to_string(),
@@ -62,9 +68,6 @@ fn parse_netsh(network_list: &str) -> Result<Vec<Wifi>, Error> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::fs::File;
-    use std::io::Read;
-    use std::path::PathBuf;
     #[test]
     fn should_parse_netsh() {
         use std::fs;
