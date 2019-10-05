@@ -8,7 +8,7 @@
 
 //! A crate to list WiFi hotspots in your area.
 //!
-//! As of v0.5.x now supports macOS, Linux and Windows.
+//! As of v0.5.x now supports macOS, Linux and Windows. :tada:
 //!
 //! # Usage
 //!
@@ -17,7 +17,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! wifiscanner = "0.4.*"
+//! wifiscanner = "0.5.*"
 //! ```
 //!
 //! and this to your crate root:
