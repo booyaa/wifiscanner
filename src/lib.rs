@@ -36,6 +36,14 @@
 //! Alternatively if you've cloned the the Git repo, you can run the above example
 //! using: `cargo run --example scan`.
 
+
+//TODO need to find a way to move these out of lib and into sys or better still windows module
+#[cfg(target_os = "windows")]
+#[macro_use]
+extern crate itertools;
+#[cfg(target_os = "windows")]
+extern crate regex;
+
 mod sys;
 
 #[allow(missing_docs)]
