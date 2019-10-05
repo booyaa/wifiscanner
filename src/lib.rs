@@ -36,10 +36,6 @@
 //! Alternatively if you've cloned the the Git repo, you can run the above example
 //! using: `cargo run --example scan`.
 
-#[macro_use]
-extern crate itertools;
-extern crate regex;
-
 mod sys;
 
 #[allow(missing_docs)]
