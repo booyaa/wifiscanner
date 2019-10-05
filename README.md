@@ -42,6 +42,7 @@ using: `cargo run --example scan`.
 
 # Changelog
 
+- 0.5.1 - crates.io metadata update
 - 0.5.0 - add window support (props to  @brianjaustin)
 - 0.4.0 - replace iwlist with iw (props to @alopatindev)
 - 0.3.6 - crates.io metadata update
