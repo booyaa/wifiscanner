@@ -55,7 +55,7 @@ see [CONTRIBUTING.md](/CONTRIBUTING.md)
 
 wifiscanner would not be possible without the following folks:
 
-@alopatindev, @bizzu, @bash, @cristicbz, @lpmi-13
+@alopatindev, @bizzu, @bash, @cristicbz, @lpmi-13, @brianjaustin
 
 
 # Copyright
