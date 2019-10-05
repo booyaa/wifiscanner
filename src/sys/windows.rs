@@ -1,7 +1,3 @@
-#[macro_use]
-extern crate itertools;
-extern crate regex;
-
 use regex::Regex;
 
 use crate::{Error, Wifi};
