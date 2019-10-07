@@ -36,11 +36,11 @@ fn parse_netsh(network_list: &str) -> Result<Vec<Wifi>, Error> {
             } else if line.find("Authentication").is_some() {
                 wifi_security = line.split(":").nth(1).unwrap_or("").trim().to_string();
             } else if line.find("BSSID").is_some() {
-                let captures = mac_regex.captures(line).unwrap();
-                wifi_macs.push(captures.get(0).unwrap());
+                let captures = mac_regex.captures(line).ok_or(Error::SyntaxRegexError)?;
+                wifi_macs.push(captures.get(0).ok_or(Error::SyntaxRegexError)?);
             } else if line.find("Signal").is_some() {
                 let percent = line.split(":").nth(1).unwrap_or("").trim().replace("%", "");
-                let percent: i32 = percent.parse().unwrap();
+                let percent: i32 = percent.parse().map_err(|_| Error::SyntaxRegexError)?;
                 wifi_rssi.push(percent / 2 - 100);
             } else if line.find("Channel").is_some() {
                 wifi_channels.push(line.split(":").nth(1).unwrap_or("").trim().to_string());

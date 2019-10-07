@@ -26,16 +26,15 @@ fn parse_airport(network_list: &str) -> Result<Vec<Wifi>, Error> {
     };
 
     let headers_string = String::from(headers);
-    // FIXME: Turn these into non panicking Errors (ok_or breaks it)
-    let col_mac = headers_string.find("BSSID").expect("failed to find BSSID");
-    let col_rrsi = headers_string.find("RSSI").expect("failed to find RSSI");
-    let col_channel = headers_string
-        .find("CHANNEL")
-        .expect("failed to find CHANNEL");
-    let col_ht = headers_string.find("HT").expect("failed to find HT");
-    let col_security = headers_string
-        .find("SECURITY")
-        .expect("failed to find SECURITY");
+    let col_headers = ["BSSID", "RSSI", "CHANNEL", "HT", "SECURITY"]
+        .iter()
+        .map(|header| headers_string.find(header).ok_or(Error::HeaderNotFound(header)))
+        .collect::<Result<Vec<_>, _>>()?;
+    let col_mac = col_headers[0];
+    let col_rrsi = col_headers[1];
+    let col_channel = col_headers[2];
+    let col_ht = col_headers[3];
+    let col_security = col_headers[4];
 
     for line in lines {
         let ssid = &line[..col_mac].trim();
@@ -82,12 +81,7 @@ mod tests {
             security: "WPA2(PSK/AES/AES)".to_string(),
         });
 
-        // FIXME: should be a better way to create test fixtures
-        let mut path = PathBuf::new();
-        path.push("tests");
-        path.push("fixtures");
-        path.push("airport");
-        path.push("airport01.txt");
+        let path = PathBuf::from("tests/fixtures/airport/airport01.txt");
 
         let file_path = path.as_os_str();
 
@@ -100,5 +94,16 @@ mod tests {
         let last = result.len() - 1;
         assert_eq!(expected[0], result[0]);
         assert_eq!(expected[1], result[last]);
+    }
+
+    #[test]
+    fn should_not_parse_other() {
+        let path = PathBuf::from("tests/fixtures/iw/iw_dev_01.txt");
+        let file_path = path.as_os_str();
+        let mut file = File::open(&file_path).unwrap();
+        let mut filestr = String::new();
+        file.read_to_string(&mut filestr).unwrap();
+
+        assert_eq!(parse_airport(&filestr).err().unwrap(), Error::HeaderNotFound("BSSID"));
     }
 }

@@ -53,6 +53,7 @@ pub enum Error {
     NoMatch,
     FailedToParse,
     NoValue,
+    HeaderNotFound(&'static str),
 }
 
 /// Wifi struct used to return information about wifi hotspots
