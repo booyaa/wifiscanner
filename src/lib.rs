@@ -45,11 +45,14 @@ extern crate regex;
 
 mod sys;
 
+use std::process::ExitStatus;
+
 #[allow(missing_docs)]
 #[derive(Debug, PartialEq, Eq)]
 pub enum Error {
     SyntaxRegexError,
     CommandNotFound,
+    CommandFailed(ExitStatus, String),
     NoMatch,
     FailedToParse,
     NoValue,

@@ -25,6 +25,12 @@ pub(crate) fn scan() -> Result<Vec<Wifi>, Error> {
         .arg("scan")
         .output()
         .map_err(|_| Error::CommandNotFound)?;
+    if !output.status.success() {
+        return Err(Error::CommandFailed(
+            output.status,
+            String::from_utf8_lossy(&output.stderr).to_string(),
+        ));
+    }
     let data = String::from_utf8_lossy(&output.stdout);
     parse_iw_dev_scan(&data)
 }
