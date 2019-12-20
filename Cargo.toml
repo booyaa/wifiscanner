@@ -9,6 +9,9 @@ readme = "README.md"
 keywords = ["wifi","hotspots","network"]
 license = "Apache-2.0"
 
+[[bin]]
+name = "wifiscanner"
+
 [dependencies]
 regex = "1"
 itertools = "0.8.0"
