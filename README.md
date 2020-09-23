@@ -1,9 +1,26 @@
 # wifiscanner
 
-[![Build Status](https://travis-ci.org/booyaa/wifiscanner.svg?branch=master)](https://travis-ci.org/booyaa/wifiscanner)
+[![Build Status](https://travis-ci.org/booyaa/wifiscanner.svg?branch=main)](https://travis-ci.org/booyaa/wifiscanner)
 [![Crates](https://img.shields.io/crates/v/wifiscanner.svg)](https://crates.io/crates/wifiscanner)
 [![docs.rs](https://docs.rs/wifiscanner/badge.svg)](https://docs.rs/wifiscanner)
 [![dependency status](https://deps.rs/repo/github/booyaa/wifiscanner/status.svg)](https://deps.rs/repo/github/booyaa/wifiscanner)
+
+## Important note to existing contributors!
+
+If you have a local clone you will need to update your default branch from `master` to `main`. The easiest way to do this is to delete the clone and recreate it.
+
+Alternatively type the following commands (thanks [Scott](https://www.hanselman.com/blog/EasilyRenameYourGitDefaultBranchFromMasterToMain.aspx)):
+
+```sh
+git checkout master
+$ git branch -m master main
+$ git fetch
+$ git branch --unset-upstream
+$ git branch -u origin/main
+$ git symbolic-ref refs/remotes/origin/HEAD refs/remotes/origin/main
+```
+
+## Intro
 
 A crate to list WiFi hotspots in your area.
 
