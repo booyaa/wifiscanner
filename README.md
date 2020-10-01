@@ -1,6 +1,6 @@
 # wifiscanner
 
-[![Build Status](https://travis-ci.org/booyaa/wifiscanner.svg?branch=main)](https://travis-ci.org/booyaa/wifiscanner)
+[![CI](https://github.com/booyaa/wifiscanner/workflows/CI/badge.svg)](https://github.com/booyaa/wifiscanner/actions?query=workflow%3ACI)
 [![Crates](https://img.shields.io/crates/v/wifiscanner.svg)](https://crates.io/crates/wifiscanner)
 [![docs.rs](https://docs.rs/wifiscanner/badge.svg)](https://docs.rs/wifiscanner)
 [![dependency status](https://deps.rs/repo/github/booyaa/wifiscanner/status.svg)](https://deps.rs/repo/github/booyaa/wifiscanner)
