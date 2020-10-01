@@ -60,7 +60,7 @@ pub enum Error {
 }
 
 /// Wifi struct used to return information about wifi hotspots
-#[derive(Debug, PartialEq, Eq, Default)]
+#[derive(Debug, PartialEq, Eq, Default, Clone)]
 pub struct Wifi {
     /// mac address
     pub mac: String,
