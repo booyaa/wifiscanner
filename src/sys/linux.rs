@@ -1,9 +1,9 @@
-use crate::{Error, Wifi};
+use crate::{Error, Result, Wifi};
 use std::env;
 use std::process::Command;
 
 /// Returns a list of WiFi hotspots in your area - (Linux) uses `iw`
-pub(crate) fn scan() -> Result<Vec<Wifi>, Error> {
+pub(crate) fn scan() -> Result<Vec<Wifi>> {
     const PATH_ENV: &'static str = "PATH";
     let path_system = "/usr/sbin:/sbin";
     let path = env::var_os(PATH_ENV).map_or(path_system.to_string(), |v| {
@@ -35,7 +35,7 @@ pub(crate) fn scan() -> Result<Vec<Wifi>, Error> {
     parse_iw_dev_scan(&data)
 }
 
-fn parse_iw_dev(interfaces: &str) -> Result<String, Error> {
+fn parse_iw_dev(interfaces: &str) -> Result<String> {
     interfaces
         .split("\tInterface ")
         .take(2)
@@ -47,7 +47,7 @@ fn parse_iw_dev(interfaces: &str) -> Result<String, Error> {
         .map(|text| text.to_string())
 }
 
-fn parse_iw_dev_scan(network_list: &str) -> Result<Vec<Wifi>, Error> {
+fn parse_iw_dev_scan(network_list: &str) -> Result<Vec<Wifi>> {
     // TODO: implement wifi.security
     let mut wifis: Vec<Wifi> = Vec::new();
     let mut wifi = Wifi::default();
