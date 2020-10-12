@@ -1,6 +1,6 @@
 use regex::Regex;
 
-use crate::{Error, Wifi, Result};
+use crate::{Error, Result, Wifi};
 
 /// Returns a list of WiFi hotspots in your area - (Windows) uses `netsh`
 pub fn scan() -> Result<Vec<Wifi>> {

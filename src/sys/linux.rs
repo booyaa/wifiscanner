@@ -75,11 +75,7 @@ fn parse_iw_dev_scan(network_list: &str) -> Result<Vec<Wifi>> {
     Ok(wifis)
 }
 
-fn extract_value(
-    line: &str,
-    pattern_start: &str,
-    pattern_end: Option<&str>,
-) -> Result<String, Error> {
+fn extract_value(line: &str, pattern_start: &str, pattern_end: Option<&str>) -> Result<String> {
     let start = pattern_start.len();
     if start < line.len() && &line[0..start] == pattern_start {
         let end = match pattern_end {
