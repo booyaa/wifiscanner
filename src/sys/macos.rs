@@ -1,22 +1,22 @@
-use crate::{Error, Wifi};
+use crate::{Error, Result, Wifi};
 
 /// Returns a list of WiFi hotspots in your area - (OSX/MacOS) uses `airport`
-pub(crate) fn scan() -> Result<Vec<Wifi>, Error> {
+pub(crate) fn scan() -> Result<Vec<Wifi>> {
     use std::process::Command;
-    let output = try!(Command::new(
+    let output = Command::new(
         "/System/Library/PrivateFrameworks/Apple80211.\
-         framework/Versions/Current/Resources/airport"
+         framework/Versions/Current/Resources/airport",
     )
     .arg("-s")
     .output()
-    .map_err(|_| Error::CommandNotFound));
+    .map_err(|_| Error::CommandNotFound)?;
 
     let data = String::from_utf8_lossy(&output.stdout);
 
     parse_airport(&data)
 }
 
-fn parse_airport(network_list: &str) -> Result<Vec<Wifi>, Error> {
+fn parse_airport(network_list: &str) -> Result<Vec<Wifi>> {
     let mut wifis: Vec<Wifi> = Vec::new();
     let mut lines = network_list.lines();
     let headers = match lines.next() {
@@ -33,7 +33,7 @@ fn parse_airport(network_list: &str) -> Result<Vec<Wifi>, Error> {
                 .find(header)
                 .ok_or(Error::HeaderNotFound(header))
         })
-        .collect::<Result<Vec<_>, _>>()?;
+        .collect::<Result<Vec<_>>>()?;
     let col_mac = col_headers[0];
     let col_rrsi = col_headers[1];
     let col_channel = col_headers[2];

@@ -1,9 +1,9 @@
 use regex::Regex;
 
-use crate::{Error, Wifi};
+use crate::{Error, Result, Wifi};
 
 /// Returns a list of WiFi hotspots in your area - (Windows) uses `netsh`
-pub fn scan() -> Result<Vec<Wifi>, Error> {
+pub fn scan() -> Result<Vec<Wifi>> {
     use std::process::Command;
     let output = Command::new("netsh.exe")
         .args(&["wlan", "show", "networks", "mode=Bssid"])
@@ -15,7 +15,7 @@ pub fn scan() -> Result<Vec<Wifi>, Error> {
     parse_netsh(&data)
 }
 
-fn parse_netsh(network_list: &str) -> Result<Vec<Wifi>, Error> {
+fn parse_netsh(network_list: &str) -> Result<Vec<Wifi>> {
     let mut wifis = Vec::new();
 
     // Regex for matching split, SSID and MAC, since these aren't pulled directly

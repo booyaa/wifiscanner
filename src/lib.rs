@@ -45,7 +45,10 @@ extern crate regex;
 
 mod sys;
 
+use std::fmt;
 use std::process::ExitStatus;
+
+type Result<T> = std::result::Result<T, Error>;
 
 #[allow(missing_docs)]
 #[derive(Debug, PartialEq, Eq)]
@@ -73,8 +76,28 @@ pub struct Wifi {
     pub security: String,
 }
 
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Error::SyntaxRegexError => write!(f, "An error occured during syntax check"),
+            Error::CommandNotFound => write!(f, "Couldn't find command"),
+            Error::CommandFailed(status, reason) => {
+                write!(f, "Command failed with exit status {}: {}", status, reason)
+            }
+            Error::NoMatch => write!(f, "Couldn't match"),
+            Error::FailedToParse => write!(f, "Failed to parse command"),
+            Error::NoValue => write!(f, "Value expected but is not present"),
+            Error::HeaderNotFound(header) => {
+                write!(f, "Did not find header {} but expected it", header)
+            }
+        }
+    }
+}
+
+impl std::error::Error for Error {}
+
 /// Returns a list of WiFi hotspots in your area.
 /// Uses `airport` on macOS and `iw` on Linux.
-pub fn scan() -> Result<Vec<Wifi>, Error> {
+pub fn scan() -> Result<Vec<Wifi>> {
     crate::sys::scan()
 }
