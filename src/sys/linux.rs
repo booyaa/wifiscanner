@@ -60,6 +60,8 @@ fn parse_iw_dev_scan(network_list: &str) -> Result<Vec<Wifi>> {
             wifi.channel = channel;
         } else if let Ok(ssid) = extract_value(line, "\tSSID: ", None) {
             wifi.ssid = ssid;
+        } else if let Ok(security) = extract_value(line, "\t\t * Authentication suites: ", None) {
+            wifi.security = security;
         }
 
         if !wifi.mac.is_empty()
