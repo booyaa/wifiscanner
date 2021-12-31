@@ -48,28 +48,36 @@ fn parse_iw_dev(interfaces: &str) -> Result<String> {
 }
 
 fn parse_iw_dev_scan(network_list: &str) -> Result<Vec<Wifi>> {
-    // TODO: implement wifi.security
     let mut wifis: Vec<Wifi> = Vec::new();
     let mut wifi = Wifi::default();
     for line in network_list.split("\n") {
         if let Ok(mac) = extract_value(line, "BSS ", Some("(")) {
+            if !wifi.mac.is_empty()
+                && !wifi.signal_level.is_empty()
+                && !wifi.channel.is_empty()
+                && !wifi.ssid.is_empty()
+            {
+                wifis.push(wifi);
+                wifi = Wifi::default();
+            }
             wifi.mac = mac;
         } else if let Ok(signal) = extract_value(line, "\tsignal: ", Some(" dBm")) {
             wifi.signal_level = signal;
-        } else if let Ok(channel) = extract_value(line, "\tDS Parameter set: channel ", None) {
+        } else if let Ok(channel) = extract_value(line, "\t\t * primary channel: ", None) {
             wifi.channel = channel;
         } else if let Ok(ssid) = extract_value(line, "\tSSID: ", None) {
             wifi.ssid = ssid;
+        } else if let Ok(security) = extract_value(line, "\t\t * Authentication suites: ", None) {
+            wifi.security = security;
         }
-
-        if !wifi.mac.is_empty()
-            && !wifi.signal_level.is_empty()
-            && !wifi.channel.is_empty()
-            && !wifi.ssid.is_empty()
-        {
-            wifis.push(wifi);
-            wifi = Wifi::default();
-        }
+    }
+    // push the last wifi
+    if !wifi.mac.is_empty()
+        && !wifi.signal_level.is_empty()
+        && !wifi.channel.is_empty()
+        && !wifi.ssid.is_empty()
+    {
+        wifis.push(wifi);
     }
 
     Ok(wifis)
