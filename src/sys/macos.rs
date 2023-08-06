@@ -20,6 +20,9 @@ fn parse_airport(network_list: &str) -> Result<Vec<Wifi>> {
     let mut wifis: Vec<Wifi> = Vec::new();
     let mut lines = network_list.lines();
     let headers = match lines.next() {
+        // Sometimes, if no networks are found it prints "no networks found"
+        // instead of producing empty output. Not sure what determines which action is taken.
+        Some("No networks found") => return Ok(vec![]),
         Some(v) => v,
         // return an empty list of WiFi if the network_list is empty
         None => return Ok(vec![]),
